@@ -4,20 +4,21 @@ using TriggerSystem;
 
 public class ExampleTriggerTester : MonoBehaviour
 {
-    [SerializeField]
-    private SphereTrigger _sphereTrigger;
+    private TriggerBase _trigger;
 
     private void Awake()
     {
-        _sphereTrigger.SphereTriggerStayed += OnTriggerStayed;
+        _trigger = GetComponent<TriggerBase>();
+        _trigger.TriggerStayed += OnTriggerStayed;
     }
 
     private void OnDestroy()
     {
-        _sphereTrigger.SphereTriggerStayed -= OnTriggerStayed;
+        _trigger.TriggerStayed -= OnTriggerStayed;
     }
 
-    private void OnTriggerStayed(SphereTrigger other)
+    private void OnTriggerStayed(TriggerBase other)
     {
+        Debug.Log($"{name} -> {other.name}");
     }
 }

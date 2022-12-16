@@ -1,11 +1,15 @@
 ﻿using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
+using TriggerSystem;
 
-namespace TriggerSystem
+namespace TriggerSystemEditor
 {
+    /// <summary>
+    /// Draws a bounding sphere to SceneView.
+    /// </summary>
     [CustomEditor(typeof(SphereTrigger)), CanEditMultipleObjects]
-    public class SphereTriggerEditor : Editor
+    public class SphereTriggerEditor : UnityEditor.Editor
     {
         private SphereBoundsHandle _sphereBoundsHandle = new();
 
@@ -23,17 +27,14 @@ namespace TriggerSystem
             _sphereBoundsHandle.radius = radius;
             _sphereBoundsHandle.SetColor(color);
 
-            // draw the handle
             EditorGUI.BeginChangeCheck();
 
             _sphereBoundsHandle.DrawHandle();
 
             if (EditorGUI.EndChangeCheck())
             {
-                // record the target object before setting new values so changes can be undone/redone
                 Undo.RecordObject(sphereTrigger, "Change Bounds");
 
-                // copy the handle's updated data back to the target object
                 SphereData newSphereData = new SphereData
                 {
 #if UNITY_EDITOR

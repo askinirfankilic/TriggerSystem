@@ -3,12 +3,9 @@ using UnityEngine;
 
 namespace TriggerSystem
 {
-    public class SphereTrigger : MonoBehaviour
+    [AddComponentMenu("Trigger System/Sphere Trigger")]
+    public class SphereTrigger : TriggerBase
     {
-        public Action<SphereTrigger> SphereTriggerEntered;
-        public Action<SphereTrigger> SphereTriggerStayed;
-        public Action<SphereTrigger> SphereTriggerExited;
-
         [SerializeField]
         private SphereData _data;
 
@@ -16,21 +13,6 @@ namespace TriggerSystem
         {
             get => _data;
             set => _data = value;
-        }
-
-        public void InvokeEntered(SphereTrigger other)
-        {
-            SphereTriggerEntered?.Invoke(other);
-        }
-
-        public void InvokeStayed(SphereTrigger other)
-        {
-            SphereTriggerStayed?.Invoke(other);
-        }
-
-        public void InvokeExited(SphereTrigger other)
-        {
-            SphereTriggerExited?.Invoke(other);
         }
     }
 }
