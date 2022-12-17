@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace TriggerSystem
 {
+    /// <summary>
+    /// Singleton for collision check test.
+    /// </summary>
     [AddComponentMenu("Trigger System/Trigger Simulation")]
     public class TriggerSimulation : MonoSingleton<TriggerSimulation>
     {
@@ -54,10 +57,8 @@ namespace TriggerSystem
                                 new float3(senderBox.transform.position + senderBox.Data.BoxBounds.min),
                                 new float3(senderBox.transform.position + senderBox.Data.BoxBounds.max),
                                 new float3(receiverBox.transform.position + receiverBox.Data.BoxBounds.min),
-                                new float3(receiverBox.transform.position + receiverBox.Data.BoxBounds.min)))
+                                new float3(receiverBox.transform.position + receiverBox.Data.BoxBounds.max)))
                         {
-                            Debug.Log((senderBox.transform.position +
-                                       senderBox.Data.BoxBounds.min).ToString());
                             senderTrigger.InvokeStayed(receiverTrigger);
                         }
                     }

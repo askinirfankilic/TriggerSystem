@@ -9,7 +9,7 @@ namespace TriggerSystemEditor
     /// Draws a bounding box to SceneView.
     /// </summary>
     [CustomEditor(typeof(BoxTrigger)), CanEditMultipleObjects]
-    public class BoxTriggerEditor : UnityEditor.Editor
+    public class BoxTriggerEditor : Editor
     {
         private BoxBoundsHandle _boxBoundsHandle = new();
 
@@ -28,7 +28,7 @@ namespace TriggerSystemEditor
             _boxBoundsHandle.center = boxTransform.position + center;
             _boxBoundsHandle.size = size;
             _boxBoundsHandle.SetColor(color);
-
+            
             EditorGUI.BeginChangeCheck();
 
             _boxBoundsHandle.DrawHandle();
@@ -43,9 +43,7 @@ namespace TriggerSystemEditor
 
                 BoxData newBoxData = new BoxData
                 {
-#if UNITY_EDITOR
                     HandleColor = color,
-#endif
                     BoxBounds = newBounds
                 };
 
