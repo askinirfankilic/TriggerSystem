@@ -2,7 +2,6 @@
 {
     public enum CollisionType
     {
-        
         SphereSphere = 0,
         AABBAABB = 1,
         SphereAABB = 2,

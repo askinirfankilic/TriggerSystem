@@ -12,11 +12,7 @@ namespace TriggerSystem
 #if UNITY_EDITOR
             HandleColor = Color.white,
 #endif
-            BoxBounds = new Bounds
-            {
-                center = Vector3.zero,
-                size = Vector3.one
-            }
+            BoxBounds = new Bounds()
         };
 
         public BoxData Data

@@ -9,7 +9,7 @@ namespace TriggerSystemEditor
     /// Draws a bounding sphere to SceneView.
     /// </summary>
     [CustomEditor(typeof(SphereTrigger)), CanEditMultipleObjects]
-    public class SphereTriggerEditor : UnityEditor.Editor
+    public class SphereTriggerEditor : Editor
     {
         private SphereBoundsHandle _sphereBoundsHandle = new();
 
@@ -37,9 +37,7 @@ namespace TriggerSystemEditor
 
                 SphereData newSphereData = new SphereData
                 {
-#if UNITY_EDITOR
                     HandleColor = color,
-#endif
                     Radius = radius,
                     Center = center
                 };
