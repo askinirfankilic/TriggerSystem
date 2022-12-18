@@ -20,6 +20,7 @@ namespace TriggerSystem
         private void Simulate()
         {
             NativeList<SphereSphereJobData> sphereJobDatas = new NativeList<SphereSphereJobData>(Allocator.TempJob);
+            NativeList<AABBAABBJobData> aabbJobDatas = new NativeList<AABBAABBJobData>(Allocator.TempJob);
 
             for (int senderIndex = 0; senderIndex < TriggerBaker.Instance.Triggers.Count; senderIndex++)
             {
@@ -41,7 +42,7 @@ namespace TriggerSystem
                         sphereJobDatas.Add(
                             new SphereSphereJobData
                             {
-                                Indexes = new SphereSphereJobData.IndexData
+                                Indexes = new IndexData
                                 {
                                     SenderIndex = senderIndex,
                                     ReceiverIndex = receiverIndex
@@ -53,25 +54,26 @@ namespace TriggerSystem
                                 ReceiverCenter = receiverSphere.Data.Center,
                                 ReceiverRadious = receiverSphere.Data.Radius,
                             });
-
-                        // if (TriggerTestHelper.CheckSphereSphere(
-                        //         // Sender data assignment.
-                        //         senderSphere.transform.position,
-                        //         senderSphere.Data.Center,
-                        //         senderSphere.Data.Radius,
-                        //         // Receiver data assignment.
-                        //         receiverSphere.transform.position,
-                        //         receiverSphere.Data.Center,
-                        //         receiverSphere.Data.Radius))
-                        // {
-                        //     senderTrigger.InvokeStayed(receiverTrigger);
-                        // }
                     }
                     // Check collision for box/box triggers.
                     else if (senderShape == ShapeType.Box && receiverShape == ShapeType.Box)
                     {
                         var senderBox = (BoxTrigger) senderTrigger;
                         var receiverBox = (BoxTrigger) receiverTrigger;
+
+                        aabbJobDatas.Add(
+                            new AABBAABBJobData
+                            {
+                                Indexes = new IndexData
+                                {
+                                    SenderIndex = senderIndex,
+                                    ReceiverIndex = receiverIndex
+                                },
+                                senderMin = new float3(senderBox.transform.position + senderBox.Data.BoxBounds.min),
+                                senderMax = new float3(senderBox.transform.position + senderBox.Data.BoxBounds.max),
+                                receiverMin = new float3(receiverBox.transform.position + receiverBox.Data.BoxBounds.min),
+                                receiverMax = new float3(receiverBox.transform.position + receiverBox.Data.BoxBounds.max)
+                            });
 
                         // if (TriggerTestHelper.CheckAABBAABB(
                         //         new float3(senderBox.transform.position + senderBox.Data.BoxBounds.min),
@@ -115,8 +117,33 @@ namespace TriggerSystem
                 }
             }
 
+            NativeArray<bool> aabbaabbResults = new NativeArray<bool>(aabbJobDatas.Length, Allocator.TempJob);
+
+            var aabbaabbJob = new CheckAABBAABBJob
+            {
+                JobDatas = aabbJobDatas,
+                Result = aabbaabbResults
+            };
+            
+            JobHandle aabbaabbHandle = aabbaabbJob.Schedule(aabbJobDatas.Length, 1);
+            
+            aabbaabbHandle.Complete();
+
+            for (int i = 0; i < aabbaabbResults.Length; i++)
+            {
+                if (aabbaabbResults[i])
+                {
+                    var sender = TriggerBaker.Instance.Triggers[aabbJobDatas[i].Indexes.SenderIndex];
+                    var receiver = TriggerBaker.Instance.Triggers[aabbJobDatas[i].Indexes.ReceiverIndex];
+                    sender.InvokeStayed(receiver);
+                }
+            }
+
             sphereJobDatas.Dispose();
             sphereSphereResults.Dispose();
+
+            aabbJobDatas.Dispose();
+            aabbaabbResults.Dispose();
         }
     }
 }

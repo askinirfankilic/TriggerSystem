@@ -7,13 +7,7 @@ namespace TriggerSystem
     public class BoxTrigger : TriggerBase
     {
         [SerializeField]
-        private BoxData _data = new BoxData
-        {
-#if UNITY_EDITOR
-            HandleColor = Color.white,
-#endif
-            BoxBounds = new Bounds()
-        };
+        private BoxData _data;
 
         public BoxData Data
         {

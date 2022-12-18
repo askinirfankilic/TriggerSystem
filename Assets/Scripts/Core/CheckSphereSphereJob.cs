@@ -10,6 +10,7 @@ namespace TriggerSystem
     {
         [Unity.Collections.ReadOnly]
         public NativeList<SphereSphereJobData> JobDatas;
+        
         [WriteOnly]
         public NativeArray<bool> Result;
 

@@ -19,6 +19,6 @@ public class ExampleTriggerTester : MonoBehaviour
 
     private void OnTriggerStayed(TriggerBase other)
     {
-        // Debug.Log($"{name} -> {other.name}");
+        Debug.Log($"{name} -> {other.name}");
     }
 }

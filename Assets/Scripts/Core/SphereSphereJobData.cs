@@ -13,11 +13,5 @@ namespace TriggerSystem
         public float3 ReceiverPosition;
         public float3 ReceiverCenter;
         public float ReceiverRadious;
-
-        public struct IndexData
-        {
-            public int SenderIndex;
-            public int ReceiverIndex;
-        }
     }
 }
