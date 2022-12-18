@@ -71,8 +71,10 @@ namespace TriggerSystem
                                 },
                                 senderMin = new float3(senderBox.transform.position + senderBox.Data.BoxBounds.min),
                                 senderMax = new float3(senderBox.transform.position + senderBox.Data.BoxBounds.max),
-                                receiverMin = new float3(receiverBox.transform.position + receiverBox.Data.BoxBounds.min),
-                                receiverMax = new float3(receiverBox.transform.position + receiverBox.Data.BoxBounds.max)
+                                receiverMin =
+                                    new float3(receiverBox.transform.position + receiverBox.Data.BoxBounds.min),
+                                receiverMax =
+                                    new float3(receiverBox.transform.position + receiverBox.Data.BoxBounds.max)
                             });
 
                         // if (TriggerTestHelper.CheckAABBAABB(
@@ -95,6 +97,7 @@ namespace TriggerSystem
                 }
             }
 
+            // Sphere/Sphere event invocation.
             NativeArray<bool> sphereSphereResults = new NativeArray<bool>(sphereJobDatas.Length, Allocator.TempJob);
 
             var sphereSphereJob = new CheckSphereSphereJob
@@ -117,6 +120,7 @@ namespace TriggerSystem
                 }
             }
 
+            // AABB/AABB event invocation.
             NativeArray<bool> aabbaabbResults = new NativeArray<bool>(aabbJobDatas.Length, Allocator.TempJob);
 
             var aabbaabbJob = new CheckAABBAABBJob
@@ -124,9 +128,9 @@ namespace TriggerSystem
                 JobDatas = aabbJobDatas,
                 Result = aabbaabbResults
             };
-            
+
             JobHandle aabbaabbHandle = aabbaabbJob.Schedule(aabbJobDatas.Length, 1);
-            
+
             aabbaabbHandle.Complete();
 
             for (int i = 0; i < aabbaabbResults.Length; i++)
@@ -139,6 +143,16 @@ namespace TriggerSystem
                 }
             }
 
+            
+            DisposeNativeCollections(sphereJobDatas, sphereSphereResults, aabbJobDatas, aabbaabbResults);
+        }
+
+        private void DisposeNativeCollections(
+            NativeList<SphereSphereJobData> sphereJobDatas,
+            NativeArray<bool> sphereSphereResults,
+            NativeList<AABBAABBJobData> aabbJobDatas,
+            NativeArray<bool> aabbaabbResults)
+        {
             sphereJobDatas.Dispose();
             sphereSphereResults.Dispose();
 
