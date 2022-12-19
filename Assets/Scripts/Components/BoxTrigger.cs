@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace TriggerSystem
 {
+    /// <summary>
+    /// AABB box shaped trigger.
+    /// </summary>
     [AddComponentMenu("Trigger System/Box Trigger")]
     public class BoxTrigger : TriggerBase
     {

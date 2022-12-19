@@ -31,7 +31,7 @@ namespace TriggerSystem
         /// <param name="max1"></param>
         /// <param name="min2"></param>
         /// <param name="max2"></param>
-        /// <returns>Returns true when box collides with other box</returns>
+        /// <returns>Returns true when these shapes collides with each other.</returns>
         public bool CheckAABBAABB(
             float3 min1,
             float3 max1,

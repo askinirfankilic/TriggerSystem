@@ -76,23 +76,38 @@ namespace TriggerSystem
                                 receiverMax =
                                     new float3(receiverBox.transform.position + receiverBox.Data.BoxBounds.max)
                             });
-
-                        // if (TriggerTestHelper.CheckAABBAABB(
-                        //         new float3(senderBox.transform.position + senderBox.Data.BoxBounds.min),
-                        //         new float3(senderBox.transform.position + senderBox.Data.BoxBounds.max),
-                        //         new float3(receiverBox.transform.position + receiverBox.Data.BoxBounds.min),
-                        //         new float3(receiverBox.transform.position + receiverBox.Data.BoxBounds.max)))
-                        // {
-                        //     senderTrigger.InvokeStayed(receiverTrigger);
-                        // }
                     }
                     // Check collision for sphere/box triggers.
                     else if (senderShape == ShapeType.Sphere && receiverShape == ShapeType.Box)
                     {
+                        var senderSphere = (SphereTrigger) senderTrigger;
+                        var receiverBox = (BoxTrigger) receiverTrigger;
+
+                        if (TriggerTestHelper.CheckSphereAABB(
+                                senderSphere.Data.Radius,
+                                new float3(senderSphere.transform.position + senderSphere.Data.Center),
+                                new float3(receiverBox.transform.position + receiverBox.Data.BoxBounds.min),
+                                new float3(receiverBox.transform.position + receiverBox.Data.BoxBounds.max))
+                           )
+                        {
+                            senderTrigger.InvokeStayed(receiverTrigger);
+                        }
                     }
                     // Check collision for box/sphere triggers.
                     else
                     {
+                        var senderBox = (BoxTrigger) senderTrigger;
+                        var receiverSphere = (SphereTrigger) receiverTrigger;
+                        
+                        if (TriggerTestHelper.CheckSphereAABB(
+                                receiverSphere.Data.Radius,
+                                new float3(receiverSphere.transform.position + receiverSphere.Data.Center),
+                                new float3(senderBox.transform.position + senderBox.Data.BoxBounds.min),
+                                new float3(senderBox.transform.position + senderBox.Data.BoxBounds.max))
+                           )
+                        {
+                            senderTrigger.InvokeStayed(receiverTrigger);
+                        }
                     }
                 }
             }
@@ -143,7 +158,7 @@ namespace TriggerSystem
                 }
             }
 
-            
+
             DisposeNativeCollections(sphereJobDatas, sphereSphereResults, aabbJobDatas, aabbaabbResults);
         }
 

@@ -35,7 +35,7 @@ namespace TriggerSystem
         /// <param name="worldPos2"></param>
         /// <param name="center2"></param>
         /// <param name="radius2"></param>
-        /// <returns>Returns true when sphere collides with other sphere</returns>
+        /// <returns>Returns true when these shapes collides with each other.</returns>
         public bool CheckSphereSphere(
             float3 worldPos1,
             float3 center1,

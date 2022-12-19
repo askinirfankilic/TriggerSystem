@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace TriggerSystem
 {
+    /// <summary>
+    /// Sphere shaped trigger.
+    /// </summary>
     [AddComponentMenu("Trigger System/Sphere Trigger")]
     public class SphereTrigger : TriggerBase
     {

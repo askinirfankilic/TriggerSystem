@@ -4,7 +4,7 @@ using UnityEngine;
 namespace TriggerSystem
 {
     /// <summary>
-    /// A singleton used to check the active state of the trigger.
+    /// A singleton used to check the active state of any trigger.
     /// </summary>
     [AddComponentMenu("Trigger System/Trigger Baker")]
     public class TriggerBaker : MonoSingleton<TriggerBaker>
