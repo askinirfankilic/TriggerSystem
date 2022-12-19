@@ -19,8 +19,10 @@ namespace TriggerSystem
 
         private void Simulate()
         {
+            // Store different types of collision datas in different NativeLists.
             NativeList<SphereSphereJobData> sphereJobDatas = new NativeList<SphereSphereJobData>(Allocator.TempJob);
             NativeList<AABBAABBJobData> aabbJobDatas = new NativeList<AABBAABBJobData>(Allocator.TempJob);
+            NativeList<SphereAABBJobData> sphereAABBJobDatas = new NativeList<SphereAABBJobData>(Allocator.TempJob);
 
             for (int senderIndex = 0; senderIndex < TriggerBaker.Instance.Triggers.Count; senderIndex++)
             {
@@ -83,31 +85,41 @@ namespace TriggerSystem
                         var senderSphere = (SphereTrigger) senderTrigger;
                         var receiverBox = (BoxTrigger) receiverTrigger;
 
-                        if (TriggerTestHelper.CheckSphereAABB(
-                                senderSphere.Data.Radius,
-                                new float3(senderSphere.transform.position + senderSphere.Data.Center),
-                                new float3(receiverBox.transform.position + receiverBox.Data.BoxBounds.min),
-                                new float3(receiverBox.transform.position + receiverBox.Data.BoxBounds.max))
-                           )
-                        {
-                            senderTrigger.InvokeStayed(receiverTrigger);
-                        }
+                        sphereAABBJobDatas.Add(
+                            new SphereAABBJobData
+                            {
+                                IsSphereSender = true,
+                                Indexes = new IndexData
+                                {
+                                    SenderIndex = senderIndex,
+                                    ReceiverIndex = receiverIndex
+                                },
+                                SphereRadius = senderSphere.Data.Radius,
+                                SphereCenter = senderSphere.transform.position + senderSphere.Data.Center,
+                                BoxMin = receiverBox.transform.position + receiverBox.Data.BoxBounds.min,
+                                BoxMax = receiverBox.transform.position + receiverBox.Data.BoxBounds.max,
+                            });
                     }
                     // Check collision for box/sphere triggers.
                     else
                     {
                         var senderBox = (BoxTrigger) senderTrigger;
                         var receiverSphere = (SphereTrigger) receiverTrigger;
-                        
-                        if (TriggerTestHelper.CheckSphereAABB(
-                                receiverSphere.Data.Radius,
-                                new float3(receiverSphere.transform.position + receiverSphere.Data.Center),
-                                new float3(senderBox.transform.position + senderBox.Data.BoxBounds.min),
-                                new float3(senderBox.transform.position + senderBox.Data.BoxBounds.max))
-                           )
-                        {
-                            senderTrigger.InvokeStayed(receiverTrigger);
-                        }
+
+                        sphereAABBJobDatas.Add(
+                            new SphereAABBJobData
+                            {
+                                IsSphereSender = false,
+                                Indexes = new IndexData
+                                {
+                                    SenderIndex = senderIndex,
+                                    ReceiverIndex = receiverIndex
+                                },
+                                SphereRadius = receiverSphere.Data.Radius,
+                                SphereCenter = receiverSphere.transform.position + receiverSphere.Data.Center,
+                                BoxMin = senderBox.transform.position + senderBox.Data.BoxBounds.min,
+                                BoxMax = senderBox.transform.position + senderBox.Data.BoxBounds.max,
+                            });
                     }
                 }
             }
@@ -158,21 +170,54 @@ namespace TriggerSystem
                 }
             }
 
+            //Sphere/AABB event invocation
+            NativeArray<bool> sphereAABBResults = new NativeArray<bool>(sphereAABBJobDatas.Length, Allocator.TempJob);
 
-            DisposeNativeCollections(sphereJobDatas, sphereSphereResults, aabbJobDatas, aabbaabbResults);
+            var sphereAABBJob = new CheckSphereAABBJob
+            {
+                JobDatas = sphereAABBJobDatas,
+                Result = sphereAABBResults
+            };
+
+            JobHandle sphereAABBHandle = sphereAABBJob.Schedule(sphereAABBJobDatas.Length, 1);
+
+            sphereAABBHandle.Complete();
+
+            for (int i = 0; i < sphereAABBResults.Length; i++)
+            {
+                if (sphereAABBResults[i])
+                {
+                    var sender = TriggerBaker.Instance.Triggers[sphereAABBJobDatas[i].Indexes.SenderIndex];
+                    var receiver = TriggerBaker.Instance.Triggers[sphereAABBJobDatas[i].Indexes.ReceiverIndex];
+                    sender.InvokeStayed(receiver);
+                }
+            }
+
+            DisposeNativeCollections(
+                sphereJobDatas,
+                sphereSphereResults,
+                aabbJobDatas,
+                aabbaabbResults,
+                sphereAABBJobDatas,
+                sphereAABBResults);
         }
 
         private void DisposeNativeCollections(
             NativeList<SphereSphereJobData> sphereJobDatas,
             NativeArray<bool> sphereSphereResults,
             NativeList<AABBAABBJobData> aabbJobDatas,
-            NativeArray<bool> aabbaabbResults)
+            NativeArray<bool> aabbaabbResults,
+            NativeList<SphereAABBJobData> sphereAABBJobDatas,
+            NativeArray<bool> sphereAABBResults)
         {
             sphereJobDatas.Dispose();
             sphereSphereResults.Dispose();
 
             aabbJobDatas.Dispose();
             aabbaabbResults.Dispose();
+
+            sphereAABBJobDatas.Dispose();
+            sphereAABBResults.Dispose();
         }
     }
 }

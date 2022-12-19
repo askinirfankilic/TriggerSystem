@@ -10,7 +10,7 @@ namespace TriggerSystem
     {
         [Unity.Collections.ReadOnly]
         public NativeList<SphereSphereJobData> JobDatas;
-        
+
         [WriteOnly]
         public NativeArray<bool> Result;
 
@@ -25,7 +25,7 @@ namespace TriggerSystem
                 JobDatas[index].ReceiverRadious
             );
         }
-        
+
         /// <summary>
         /// Checks collision between two spherical object.
         /// </summary>
