@@ -12,8 +12,6 @@ namespace TriggerSystem
         [ReadOnly]
         public ShapeType Shape;
 
-        [HideInInspector]
-        public CollisionType Collision;
         public Action<TriggerBase> TriggerStayed;
 
         public void InvokeStayed(TriggerBase other)
