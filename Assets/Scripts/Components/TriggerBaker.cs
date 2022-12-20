@@ -11,14 +11,14 @@ namespace TriggerSystem
     {
         public List<TriggerBase> Triggers = new();
 
-        public void Remove(TriggerBase trigger)
-        {
-            Triggers.Remove(trigger);
-        }
-
         public void Add(TriggerBase trigger)
         {
             Triggers.Add(trigger);
+        }
+
+        public void Remove(TriggerBase trigger)
+        {
+            Triggers.Remove(trigger);
         }
     }
 }
