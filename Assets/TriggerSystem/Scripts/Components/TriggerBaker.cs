@@ -9,6 +9,7 @@ namespace TriggerSystem
     [AddComponentMenu("Trigger System/Trigger Baker")]
     public class TriggerBaker : MonoSingleton<TriggerBaker>
     {
+        [ReadOnly]
         public List<TriggerBase> Triggers = new();
 
         public void Add(TriggerBase trigger)
